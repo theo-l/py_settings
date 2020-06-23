@@ -76,7 +76,9 @@ patch_settings('project.settings') # **NOTE**, this call must be called before i
 from example import settings
 
 def main():
-    print('settings')
+    print(f'MONGO_DB_URI:{settings.MONGO_DB_URI}')
+    print(f'MONGO_DB_NAME: {settings.MONGO_DB_NAME}')
+    print(f'COLLECTION_NAME: {settings.COLLECTION_NAME}')
     
 
 
