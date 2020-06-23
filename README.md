@@ -64,7 +64,7 @@ MONGO_DB_NAME = test_demoDB
 MONGO_DB_NAME = staging_demoDB
 
 [production]
-MONGO_DB_NAME = _demoDB
+MONGO_DB_NAME = demoDB
 
 ```
 
