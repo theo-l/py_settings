@@ -1,0 +1,4 @@
+bottle==0.12.8
+webtest
+pytest
+pytest-cov
