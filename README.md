@@ -37,7 +37,50 @@ In our `settings.py` we can specify the following configuration options:
     - It's better only keep the environment related plain text configuration, no environment(even this is supported)
     - The sections should follow: ['default', 'test', 'development', 'homolog', 'staging', 'production']. Of course you can cusomize these section during the initiate process
 
+ For example, we want to configure a mongo database connection for our project, in our `settings.py`, should be like:
+ 
+ ```python
+API_ENV='${API_ENV:dev}'
+
+MONGO_DB_URI='${MONGO_DB_URI:mongodb://localhost:27017}' # sensible environment dependent data 
+
+COLLECTION_NAME = 'collections' #none environment dependent plain text data 
+
+_config_files_=['./config.ini']
+
+MONGO_DB_NAME=None # environment dependent plain text data we can save in config.ini(reduce environment variable count)  
+
+```
+
+in our `config.ini`, we can save some non sensible environment dependent data, to avoid too much environment variable
+```toml
+[default]
+MONGO_DB_NAME = dev_demoDB
+
+[test]
+MONGO_DB_NAME = test_demoDB
+
+[staging]
+MONGO_DB_NAME = staging_demoDB
+
+[production]
+MONGO_DB_NAME = _demoDB
+
+```
+
+Then, in our `main.py` we can use these configurations as following:
+
+```python
+from py_settings.patch import patch_settings
+patch_settings('project.settings') # **NOTE**, this call must be called before import the real setting module
+from example import settings
+
+def main():
+    print('settings')
     
+
+
+```
 
 
 
