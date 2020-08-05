@@ -1,0 +1,58 @@
+image: python:3.6-slim-buster
+
+
+stages:
+  - test
+  - build
+  - deploy
+
+test_apikit:
+  stage: test
+  before_script:
+    - pip install -r requirements-dev.txt
+  script:
+    - safety check -r requirements.txt
+    - pytest --cov=py_settings
+
+build_dist:
+  stage: build
+  before_script:
+    - apt update && apt install -y git
+    - pip install -r requirements.txt
+    - pip install --upgrade setuptools wheel
+  script:
+    - python3 setup.py sdist bdist_wheel
+  artifacts:
+    paths:
+      - dist/*
+    expire_in: 2 hours
+
+deploy_pypi:
+  stage: deploy
+  only:
+    - tags
+  environment:
+    name: production
+    url: https://pypi.org/project/bottle-apikit/
+  before_script:
+    - python -V
+    - pip install --upgrade twine
+  script:
+    - twine upload  -u $TWINE_USERNAME -p $TWINE_PASSWORD dist/*
+  dependencies:
+    - build_dist
+  when: on_success
+
+create release:
+  stage: deploy
+  image: kawamanza/stepup-cli:0.9.16
+  before_script:
+    - apk add -qq curl
+  script:
+    - deploy/create_new_release.sh
+  only:
+    refs:
+      - master
+  when: manual
+
+
