@@ -6,7 +6,7 @@ stages:
   - build
   - deploy
 
-test_apikit:
+testing:
   stage: test
   before_script:
     - pip install -r requirements-dev.txt
@@ -32,7 +32,7 @@ deploy_pypi:
     - tags
   environment:
     name: production
-    url: https://pypi.org/project/bottle-apikit/
+    url: https://pypi.org/project/py_settings/
   before_script:
     - python -V
     - pip install --upgrade twine
