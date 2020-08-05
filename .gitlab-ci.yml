@@ -11,14 +11,13 @@ test_apikit:
   before_script:
     - pip install -r requirements-dev.txt
   script:
-    - safety check -r requirements.txt
+    - safety check 
     - pytest --cov=py_settings
 
 build_dist:
   stage: build
   before_script:
     - apt update && apt install -y git
-    - pip install -r requirements.txt
     - pip install --upgrade setuptools wheel
   script:
     - python3 setup.py sdist bdist_wheel
