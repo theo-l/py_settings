@@ -21,35 +21,21 @@ def git_version():
         return git_default_version
 
 
-setup(
-    name="Python settings",
-
-    version=git_version(),
-
-    description="A simple setting tool for project",
-    long_description=read_file('README.md'),
-    long_description_content_type='text/markdown',
-
-    url='http://gitlab.com/theo-l/py_settings',
-
-    author='Liang Guisheng',
-    author_email='theol.liang@gmail.com',
-
-    license='MIT',
-
-    classifiers=[
-        'Programming Language :: Python :: 3',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
-    ],
-
-    keywords='python settings configuration',
-
-    packages=["py_settings"],
-
-    extras_require={
-        'dev': read_file('requirements-dev.txt').strip().split('\n')[1:]
-    }
-
-)
+setup(name="Python settings",
+      version=git_version(),
+      description="A simple setting tool for project",
+      long_description=read_file('README.md'),
+      long_description_content_type='text/markdown',
+      url='http://gitlab.com/theo-l/py_settings',
+      author='Liang Guisheng',
+      author_email='theol.liang@gmail.com',
+      license='MIT',
+      classifiers=[
+          'Programming Language :: Python :: 3',
+          'Intended Audience :: Developers',
+          'License :: OSI Approved :: MIT License',
+          'Operating System :: OS Independent',
+      ],
+      keywords='python settings configuration',
+      packages=["py_settings"],
+      extras_require={'dev': read_file('requirements-dev.txt').strip().split('\n')[1:]})

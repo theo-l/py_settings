@@ -44,13 +44,13 @@ def test_non_declared_module_settings_failed():
     with pytest.raises(Warning) as e:
         patch_settings('tests.factory.non_declared_module_settings')
 
-    assert 'should be declared' in str(e)
+    assert 'should be declared' in str(e.value)
 
 
 def test_invalid_section_config_settings_failed():
     with pytest.raises(Warning) as e:
         patch_settings('tests.factory.invalid_section_config_settings')
-    assert 'Invalid config sections' in str(e)
+    assert 'Invalid config sections' in str(e.value)
 
 
 def test_non_exist_module_settings_failed():
@@ -61,7 +61,7 @@ def test_non_exist_module_settings_failed():
 def test_config_non_exist_settings_failed():
     with pytest.raises(Exception) as e:
         patch_settings('tests.factory.config_non_exist_settings')
-    assert 'not found' in str(e)
+    assert 'not found' in str(e.value)
 
 
 def test_module_settings_coverage_ok():

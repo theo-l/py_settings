@@ -33,19 +33,13 @@ class GlobalSettingFactory:
     NORMAL_VALUE_PATTERN = r'(.+)?(?:<(int|bool|str|float)>)'
     API_ENV_KEY = 'API_ENV'
     VALID_ENVS = ['default', 'test', 'development', 'homolog', 'staging', 'production']
-    CONVERTER_MAP = {
-        'int': int,
-        'str': str,
-        'bool': boolean,
-        'float': float
-    }
+    CONVERTER_MAP = {'int': int, 'str': str, 'bool': boolean, 'float': float}
 
     def __init__(self,
                  setting_module_name: str,
                  api_env_key: str = None,
                  config_file_key: str = None,
-                 valid_envs: List[str] = None
-                 ):
+                 valid_envs: List[str] = None):
         try:
             self._setting_module_name = setting_module_name
             self._module = import_module(setting_module_name)
