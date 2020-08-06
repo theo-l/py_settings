@@ -21,7 +21,7 @@ def git_version():
         return git_default_version
 
 
-setup(name="Python settings",
+setup(name="ms-settings",
       version=git_version(),
       description="A simple setting tool for project",
       long_description=read_file('README.md'),
