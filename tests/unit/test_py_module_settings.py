@@ -63,6 +63,12 @@ def test_config_non_exist_settings_failed():
         patch_settings('tests.factory.config_non_exist_settings')
     assert 'not found' in str(e.value)
 
+def test_invalid_environment_variable_in_text_config_failed():
+    with pytest.raises(Warning) as e:
+        patch_settings('tests.factory.invalid_environment_in_text_conf_settings')
+    assert  'Environment variables' in str(e.value)
+
+
 
 def test_module_settings_coverage_ok():
     patch_settings('tests.factory.correct_settings', valid_envs=['default', 'dev', 'test'])

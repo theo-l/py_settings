@@ -68,23 +68,6 @@ class GlobalSettingFactory:
 
             self._patch_setting_module_option_values()
 
-    def _merge_files_options(self):
-        """
-        Merge the configuration options into the module options
-        """
-        non_valid_options = set(self._file_options.keys()) - set(self._module_options.keys())
-        if non_valid_options:
-            raise Warning(
-                f'Configuration fields: {non_valid_options} should be declared in {self._setting_module_name}!')
-        self._module_options.update(self._file_options)
-
-    def _patch_setting_module_option_values(self):
-        for k, v in self._module_options.items():
-            if v is not None:
-                v = self._parser_option_value(v)
-                self._module_options[k] = v
-                setattr(self._module, k, v)
-
     def _extract_module_options(self) -> Dict:
         """
        Extract all configuration options from the given settings module
@@ -106,9 +89,29 @@ class GlobalSettingFactory:
             non_valid_sections = set(sections) - set(self.VALID_ENVS)
             if non_valid_sections:
                 raise Warning(f'Invalid config sections: {sections} in file {config_path}')
-            global_file_options.update(parser.items('default') if parser.has_section('default') else {})
-            global_file_options.update(parser.items(self.current_env) if parser.has_section(self.current_env) else {})
+            current_options = dict(parser.items('default')) if parser.has_section('default') else {}
+            current_options.update(parser.items(self.current_env) if parser.has_section(self.current_env) else {})
+            invalid_environment_variables = {
+                key.upper(): value
+                for key, value in current_options.items() if re.match(self.ENV_VALUE_PATTERN, value)
+            }
+            if invalid_environment_variables:
+                raise Warning(
+                    f'Environment variables {invalid_environment_variables} should be declared in python settings module!'
+                )
+
+            global_file_options.update(current_options)
         return {key.upper(): value for key, value in global_file_options.items()}
+
+    def _merge_files_options(self):
+        """
+        Merge the configuration options into the module options
+        """
+        non_valid_options = set(self._file_options.keys()) - set(self._module_options.keys())
+        if non_valid_options:
+            raise Warning(
+                f'Configuration fields: {non_valid_options} should be declared in {self._setting_module_name}!')
+        self._module_options.update(self._file_options)
 
     def _parser_option_value(self, config_value: str) -> Optional[Any]:
         """
@@ -131,3 +134,10 @@ class GlobalSettingFactory:
                 return self.CONVERTER_MAP.get(value_type, str)(value)
 
         return config_value
+
+    def _patch_setting_module_option_values(self):
+        for k, v in self._module_options.items():
+            if v is not None:
+                v = self._parser_option_value(v)
+                self._module_options[k] = v
+                setattr(self._module, k, v)
