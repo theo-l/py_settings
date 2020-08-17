@@ -16,6 +16,11 @@ def main():
     print(settings.MONGO_DB_URL)
     print(settings.MONGO_DB_NAME)
     print(settings.COLLECTION_NAME)
+    print(settings.TYPE_VAR)
+    print(settings.DICT_VAR, type(settings.DICT_VAR))
+    print(settings.LIST_VAR, type(settings.LIST_VAR))
+    print(settings.SET_VAR, type(settings.SET_VAR))
+    print(settings.TUPLE_VAR, type(settings.TUPLE_VAR))
 
 
 if __name__ == '__main__':

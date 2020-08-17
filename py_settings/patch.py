@@ -7,6 +7,7 @@
 """
 import os
 import re
+import json
 from configparser import ConfigParser
 from importlib import import_module
 from pathlib import Path
@@ -17,6 +18,22 @@ def boolean(value: str):
     return value.lower() not in ['', 'f', 'n', '0', 'false']
 
 
+def dict_convert(value: str):
+    return json.loads(value)
+
+
+def list_convert(value: str, separator: str = ','):
+    return value.split(separator)
+
+
+def set_convert(value: str, separator: str = ','):
+    return set(value.split(separator))
+
+
+def tuple_convert(value: str, separator: str = ','):
+    return tuple(value.split(separator))
+
+
 def patch_settings(setting_module_name: str,
                    api_env_key: str = None,
                    config_file_key: str = None,
@@ -24,16 +41,23 @@ def patch_settings(setting_module_name: str,
     """
     util method for init project global setting module for later usage on project global
     """
-    GlobalSettingFactory(setting_module_name, api_env_key, config_file_key, valid_envs)
+    GlobalSettingFactory(setting_module_name, api_env_key,
+                         config_file_key, valid_envs)
 
 
 class GlobalSettingFactory:
     CONFIG_FILE_KEY = '_config_files_'
-    ENV_VALUE_PATTERN = r'(\$\{([^:]+)?:?(.+?)?(?:<(int|bool|str|float)>)?\})'  # ${ENV_name:DEFAULT_VALUE<type>}
-    NORMAL_VALUE_PATTERN = r'(.+)?(?:<(int|bool|str|float)>)'
+    # ${ENV_NAME[:DEFAULT_VALUE][<type>]}
+    ENV_VALUE_PATTERN = r'(\$\{([^:\<\>]+)?:?(.*?)?(?:<(int|bool|str|float|dict|list|set|tuple)>)?\})'
+    NORMAL_VALUE_PATTERN = r'(.+)?(?:<(int|bool|str|float|dict|list|set|tuple)>)'
     API_ENV_KEY = 'API_ENV'
-    VALID_ENVS = ['default', 'test', 'development', 'homolog', 'staging', 'production']
-    CONVERTER_MAP = {'int': int, 'str': str, 'bool': boolean, 'float': float}
+    VALID_ENVS = ['default', 'test', 'development',
+                  'homolog', 'staging', 'production']
+    CONVERTER_MAP = {'int': int, 'str': str, 'bool': boolean,
+                     'float': float, 'dict': dict_convert,
+                     'set':set_convert, 'list':list_convert,
+                     'tuple':tuple_convert
+                     }
 
     def __init__(self,
                  setting_module_name: str,
@@ -58,10 +82,12 @@ class GlobalSettingFactory:
 
             self._module_path = Path(self._module.__file__).parent
             self._module_options = self._extract_module_options()
-            self._module_config_files = getattr(self._module, self.CONFIG_FILE_KEY, [])
+            self._module_config_files = getattr(
+                self._module, self.CONFIG_FILE_KEY, [])
 
             # we need to detect the environment before parse file configurations
-            self.current_env = self._parser_option_value(self._module_options.get(self.API_ENV_KEY))
+            self.current_env = self._parser_option_value(
+                self._module_options.get(self.API_ENV_KEY))
             self._file_options = self._extract_config_file_options()
 
             self._merge_files_options()
@@ -88,9 +114,12 @@ class GlobalSettingFactory:
             sections = parser.sections()
             non_valid_sections = set(sections) - set(self.VALID_ENVS)
             if non_valid_sections:
-                raise Warning(f'Invalid config sections: {sections} in file {config_path}')
-            current_options = dict(parser.items('default')) if parser.has_section('default') else {}
-            current_options.update(parser.items(self.current_env) if parser.has_section(self.current_env) else {})
+                raise Warning(
+                    f'Invalid config sections: {sections} in file {config_path}')
+            current_options = dict(parser.items(
+                'default')) if parser.has_section('default') else {}
+            current_options.update(parser.items(
+                self.current_env) if parser.has_section(self.current_env) else {})
             invalid_environment_variables = {
                 key.upper(): value
                 for key, value in current_options.items() if re.match(self.ENV_VALUE_PATTERN, value)
@@ -107,7 +136,8 @@ class GlobalSettingFactory:
         """
         Merge the configuration options into the module options
         """
-        non_valid_options = set(self._file_options.keys()) - set(self._module_options.keys())
+        non_valid_options = set(self._file_options.keys()) - \
+            set(self._module_options.keys())
         if non_valid_options:
             raise Warning(
                 f'Configuration fields: {non_valid_options} should be declared in {self._setting_module_name}!')
@@ -122,6 +152,7 @@ class GlobalSettingFactory:
         match = re.match(self.ENV_VALUE_PATTERN, config_value)
         if match:
             env_name, default_value, value_type = match.groups()[1:]
+            print(env_name, default_value, value_type, '\n')
             final_value = os.environ.get(env_name, default_value)
             if value_type:
                 return self.CONVERTER_MAP[value_type](final_value)
