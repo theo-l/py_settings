@@ -1,7 +1,8 @@
 import os
-import subprocess
 
-from setuptools import setup, find_packages
+from setuptools import setup
+
+from ms_settings import __version__
 
 
 def read_file(fname):
@@ -12,13 +13,7 @@ def git_version():
     """
     Fetch version from git information
     """
-    git_default_version = '0.1.0'
-    try:
-        git_tag = subprocess.check_output(['git', 'describe', '--tags'])
-        if git_tag:
-            return git_tag.strip()[1:].decode('utf-8')
-    except Exception:
-        return git_default_version
+    return '.'.join([str(u) for u in __version__])
 
 
 setup(name="ms-settings",

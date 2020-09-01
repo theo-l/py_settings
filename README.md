@@ -15,14 +15,11 @@ If we have a project like the following structure:
 
 <pre>
 project/
-    |
-    |
-    |_main.py
-    |
-    |_settings.py
-    |
-    |_config.ini
-
+    ├── config.ini
+    │
+    ├── settings.py
+    │
+    └── main.py
 </pre>
 
 In our `settings.py` we can specify the following configuration options:
