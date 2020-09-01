@@ -7,7 +7,7 @@
 """
 import pytest
 
-from py_settings.patch import patch_settings
+from ms_settings.patch import patch_settings
 
 
 def test_correct_module_settings():
@@ -28,6 +28,10 @@ def test_correct_module_settings():
     assert settings.PY_ENV_DEFAULT_INT == 20
     assert settings.PY_ENV_DEFAULT_FLOAT == 20.5
     assert settings.PY_ENV_DEFAULT_BOOL is True
+    assert settings.PY_ENV_DEFAULT_DICT == {'name': 'demo'}
+    assert settings.PY_ENV_DEFAULT_LIST == ['1', '2', '3', '4']
+    assert settings.PY_ENV_DEFAULT_SET == {'1', '2', '3', '4'}
+    assert settings.PY_ENV_DEFAULT_TUPLE == ('1', '2', '3', '4')
 
     assert settings.CONFIG_RAW == 'config_raw'
     assert settings.CONFIG_DEFAULT_NO_TYPE == 'config_default_str'
@@ -63,11 +67,11 @@ def test_config_non_exist_settings_failed():
         patch_settings('tests.factory.config_non_exist_settings')
     assert 'not found' in str(e.value)
 
+
 def test_invalid_environment_variable_in_text_config_failed():
     with pytest.raises(Warning) as e:
         patch_settings('tests.factory.invalid_environment_in_text_conf_settings')
-    assert  'Environment variables' in str(e.value)
-
+    assert 'Environment variables' in str(e.value)
 
 
 def test_module_settings_coverage_ok():

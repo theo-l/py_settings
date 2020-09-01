@@ -71,7 +71,7 @@ MONGO_DB_NAME = demoDB
 Then, in our `main.py` we can use these configurations as following:
 
 ```python
-from py_settings.patch import patch_settings
+from ms_settings.patch import patch_settings
 patch_settings('project.settings') # **NOTE**, this call must be called before import the real setting module
 from example import settings
 

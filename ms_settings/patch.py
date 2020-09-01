@@ -48,15 +48,15 @@ def patch_settings(setting_module_name: str,
 class GlobalSettingFactory:
     CONFIG_FILE_KEY = '_config_files_'
     # ${ENV_NAME[:DEFAULT_VALUE][<type>]}
-    ENV_VALUE_PATTERN = r'(\$\{([^:\<\>]+)?:?(.*?)?(?:<(int|bool|str|float|dict|list|set|tuple)>)?\})'
+    ENV_VALUE_PATTERN = r'(\$\{([^:\<\>]+)?:?(.*?)?(?:<(int|bool|str|float|dict|list|set|tuple)>)?\}$)'
     NORMAL_VALUE_PATTERN = r'(.+)?(?:<(int|bool|str|float|dict|list|set|tuple)>)'
     API_ENV_KEY = 'API_ENV'
     VALID_ENVS = ['default', 'test', 'development',
                   'homolog', 'staging', 'production']
     CONVERTER_MAP = {'int': int, 'str': str, 'bool': boolean,
                      'float': float, 'dict': dict_convert,
-                     'set':set_convert, 'list':list_convert,
-                     'tuple':tuple_convert
+                     'set': set_convert, 'list': list_convert,
+                     'tuple': tuple_convert
                      }
 
     def __init__(self,
@@ -136,8 +136,7 @@ class GlobalSettingFactory:
         """
         Merge the configuration options into the module options
         """
-        non_valid_options = set(self._file_options.keys()) - \
-            set(self._module_options.keys())
+        non_valid_options = set(self._file_options.keys()) - set(self._module_options.keys())
         if non_valid_options:
             raise Warning(
                 f'Configuration fields: {non_valid_options} should be declared in {self._setting_module_name}!')
@@ -152,8 +151,8 @@ class GlobalSettingFactory:
         match = re.match(self.ENV_VALUE_PATTERN, config_value)
         if match:
             env_name, default_value, value_type = match.groups()[1:]
-            print(env_name, default_value, value_type, '\n')
-            final_value = os.environ.get(env_name, default_value)
+            # when there is no default value, use None as default
+            final_value = os.environ.get(env_name, default_value or None)
             if value_type:
                 return self.CONVERTER_MAP[value_type](final_value)
             return final_value

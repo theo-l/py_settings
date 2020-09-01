@@ -5,7 +5,7 @@
 @Author: liang
 @File: main.py
 """
-from py_settings.patch import patch_settings
+from ms_settings.patch import patch_settings
 
 patch_settings('example.settings')
 from example import settings  # noqa

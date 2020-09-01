@@ -37,5 +37,5 @@ setup(name="ms-settings",
           'Operating System :: OS Independent',
       ],
       keywords='python settings configuration',
-      packages=["py_settings"],
+      packages=["ms_settings"],
       extras_require={'dev': read_file('requirements-dev.txt').strip().split('\n')[1:]})
